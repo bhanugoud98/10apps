@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  node-app:
+    # 1. Build the image using the Dockerfile in the current folder (.)
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      # 2. Tell Node where the database is (using the service name 'mongodb')
+      - MONGO_URL=mongodb://mongodb:27017/mydatabase
+    depends_on:
+      - mongodb
+    networks:
+      - node-network
+
+  mongodb:
+    # 3. Use the official MongoDB image from Docker Hub
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    networks:
+      - node-network
+    volumes:
+      # 4. Persistence: Save data even if the container is deleted
+      - mongo-data:/data/db
+
+networks:
+  node-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
